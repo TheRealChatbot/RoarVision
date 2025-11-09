@@ -1,0 +1,341 @@
+@use 'start' as *;
+/*! MatrixVision v#{$version} by #{$author} */
+
+/* Import ClearVision-style backend utilities */
+@use 'backend' as *;
+
+/* Contains base theme structure (layouts, etc.) */
+@use 'theme';
+
+/* ============================================================
+   INTERNAL BASE
+   ============================================================ */
+
+$sf: var(--saturation-factor, 1);
+$calc: h calc(#{$sf} * s) l / alpha;
+
+/* Map Discord theme scopes to HSL vars (inspired by ClearVision) */
+:is(#{c(main themeLight)}, #{c(main themeDark)}, #{c(main themeDarker)}, #{c(main themeMidnight)}) {
+  &,
+  &:is(#{c(main themeLight)}, #{c(main themeDark)}) {
+    --text-normal: hsl(from var(--normal-text) #{$calc});
+    --text-muted: hsl(from var(--muted-text) #{$calc});
+    --text-link: var(--hsl-main-color);
+    --text-brand: var(--hsl-main-color);
+    --text-positive: var(--hsl-success-color);
+    --text-danger: var(--hsl-danger-color);
+
+    --hsl-background-shading: hsl(from var(--background-shading) #{$calc});
+    --hsl-card-shading: hsl(from var(--card-shading) #{$calc});
+    --hsl-popout-shading: hsl(from var(--popout-shading) #{$calc});
+    --hsl-modal-shading: hsl(from var(--modal-shading) #{$calc});
+    --hsl-input-shading: hsl(from var(--input-shading) #{$calc});
+    --hsl-input-border-shading: hsl(from var(--hsl-input-shading) h s l / .1);
+  }
+}
+
+/* ============================================================
+   ROOT VARIABLES
+   (Internal HSL + public-editable Matrix defaults)
+   ============================================================ */
+
+:root {
+  /* INTERNAL: derived HSL from editable vars */
+  --hsl-main-color: hsl(from var(--main-color) #{$calc});
+  --hsl-hover-color: hsl(from var(--hover-color) #{$calc});
+  --hsl-success-color: hsl(from var(--success-color) #{$calc});
+  --hsl-warning-color: hsl(from var(--warning-color) #{$calc});
+  --hsl-danger-color: hsl(from var(--danger-color) #{$calc});
+  --hsl-info-color: hsl(from var(--info-color) #{$calc});
+  --hsl-online-color: hsl(from var(--online-color) #{$calc});
+  --hsl-idle-color: hsl(from var(--idle-color) #{$calc});
+  --hsl-dnd-color: hsl(from var(--dnd-color) #{$calc});
+  --hsl-streaming-color: hsl(from var(--streaming-color) #{$calc});
+  --hsl-offline-color: hsl(from var(--offline-color) #{$calc});
+
+  --hsl-channel-normal: var(--channel-normal);
+  --hsl-channel-muted: var(--channel-muted);
+  --hsl-channel-hover: var(--channel-hover);
+  --hsl-channel-selected: var(--channel-selected);
+  --hsl-channel-selected-bg: var(--channel-selected-bg);
+  --hsl-channel-unread: var(--channel-unread);
+  --hsl-channel-unread-hover: var(--channel-unread-hover);
+
+  --font-primary: var(--main-font);
+  --font-display: var(--main-font);
+  --font-code: var(--code-font);
+
+  --focus-primary: var(--focus-color);
+
+  /* ========================================================
+     PUBLIC: EDITABLE MATRIX DEFAULTS
+     ======================================================== */
+
+  /* Core Matrix palette */
+  --main-color: #00ff41;
+  --hover-color: #00cc33;
+  --success-color: #00ff41;
+  --warning-color: #00ff41;
+  --danger-color: #ff355e;
+  --info-color: #00ff41;
+
+  --online-color: #00ff41;
+  --idle-color: #b3ff66;
+  --dnd-color: #ff355e;
+  --streaming-color: #7c4dff;
+  --offline-color: #4f4f4f;
+
+  /* Background base — Matrix rain is drawn via CSS below */
+  --background-shading-percent: 0%;
+  --background-image: none;
+  --background-position: center;
+  --background-size: cover;
+  --background-attachment: fixed;
+  --background-filter: brightness(calc(#{$sf} * 0.9)) saturate(calc(#{$sf} * 1.2));
+
+  /* Popouts/Modals reuse main backdrop look */
+  --user-popout-image: var(--background-image);
+  --user-popout-position: var(--background-position);
+  --user-popout-size: var(--background-size);
+  --user-popout-attachment: var(--background-attachment);
+  --user-popout-filter: var(--background-filter);
+
+  --user-modal-image: var(--background-image);
+  --user-modal-position: var(--background-position);
+  --user-modal-size: var(--background-size);
+  --user-modal-attachment: var(--background-attachment);
+  --user-modal-filter: var(--background-filter);
+
+  /* Icons & fonts */
+  --home-icon: url(https://clearvision.github.io/icons/discord.svg);
+  --home-size: cover;
+
+  --main-font: "gg sans", Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --code-font: Consolas, "gg mono", "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Channels */
+  --channel-normal: var(--interactive-normal);
+  --channel-muted: var(--interactive-muted);
+  --channel-hover: var(--interactive-hover);
+  --channel-selected: var(--interactive-active);
+  --channel-selected-bg: rgba(0, 255, 65, 0.18);
+  --channel-unread: var(--main-color);
+  --channel-unread-hover: var(--hover-color);
+
+  /* Focus */
+  --focus-color: var(--main-color);
+
+  /* Matrix-specific controls */
+  --matrix-bg: #000000;
+  --matrix-layer1-opacity: 0.26;
+  --matrix-layer2-opacity: 0.16;
+  --matrix-layer3-opacity: 0.08;
+  --matrix-speed-slow: 6s;
+  --matrix-speed-mid: 4.4s;
+  --matrix-speed-fast: 3.0s;
+
+  --matrix-font: "JetBrains Mono", "Fira Code", "gg mono", Consolas, monospace;
+
+  --matrix-chars:
+    "01ｱｲｳｴｵｶｷｸｹｺﾊﾋﾌﾍﾎQWERTYUIOPASDFGHJKLZXCVBNM0123456789$#@\A"
+    "7FﾊABｻCDﾐEFｾGHｵIJﾈKLﾇMNｱOPﾜQRｺSTUVWX0123456789$#@ZXCVBNM\A"
+    "ｱﾇﾈｻﾐｾｵﾊｱﾜｺZXCVBNMQWERTYUIOP0123456789$#@ASDFGHJKL\A"
+    "ｱ0ﾇ1ﾈ2ｻ3ﾐ4ｾ5ｵ6ﾊ7ｱ8ﾇ9ﾜ0ｺ1Z2X3C4V5B6N7M8Q9W0E1R2T3Y4U5I6O7P\A"
+    "ｱXﾇZﾈCｻVﾐBｾNｵMﾊQｱWﾇEﾈRｻTﾐYｾUｵIﾊOｱPﾇAﾈSｻDﾐFｾGｵHﾊJｱKﾇLﾈZｻXﾐCｾVｵBﾊNｱMﾇQ\A"
+    "10ｱﾜｺZXCVBNMQWERTYUIOPASDFGHJKL0123456789$#@\A";
+}
+
+/* ============================================================
+   THEME-SPECIFIC SHADING PRESETS (Matrix-tuned)
+   ============================================================ */
+
+/* Light Theme */
+:is(#{c(main themeLight)}, #{c(main themeDark)} #{c(main themeLight)}) {
+  --background-shading: rgba(252, 252, 252, 0.12);
+  --card-shading: rgba(0, 0, 0, 0.08);
+  --popout-shading: rgba(0, 0, 0, 0.3);
+  --modal-shading: rgba(0, 0, 0, 0.25);
+  --input-shading: rgba(0, 0, 0, 0.35);
+  --normal-text: #0aff41;
+  --muted-text: #4faf4f;
+}
+
+/* Ash Theme */
+:is(#{c(main themeDark)}, #{c(main themeLight)} #{c(main themeDark)}) {
+  --background-shading: rgba(0, 0, 0, 0.5);
+  --card-shading: rgba(0, 0, 0, 0.35);
+  --popout-shading: rgba(0, 0, 0, 0.7);
+  --modal-shading: rgba(0, 0, 0, 0.55);
+  --input-shading: rgba(255, 255, 255, 0.04);
+  --normal-text: #d8ffd8;
+  --muted-text: #6f9f6f;
+}
+
+/* Dark Theme */
+:is(#{c(main themeDarker)}, #{c(main themeLight)} #{c(main themeDarker)}) {
+  --background-shading: rgba(0, 0, 0, 0.7);
+  --card-shading: rgba(0, 0, 0, 0.4);
+  --popout-shading: rgba(0, 0, 0, 0.78);
+  --modal-shading: rgba(0, 0, 0, 0.6);
+  --input-shading: rgba(255, 255, 255, 0.04);
+  --normal-text: #e5ffe5;
+  --muted-text: #7ca97c;
+}
+
+/* Onyx Theme */
+:is(#{c(main themeMidnight)}, #{c(main themeLight)} #{c(main themeMidnight)}) {
+  --background-shading: rgba(0, 0, 0, 0.85);
+  --card-shading: rgba(0, 0, 0, 0.5);
+  --popout-shading: rgba(0, 0, 0, 0.85);
+  --modal-shading: rgba(0, 0, 0, 0.7);
+  --input-shading: rgba(255, 255, 255, 0.04);
+  --normal-text: #c6ffd6;
+  --muted-text: #6aa86f;
+}
+
+/* ============================================================
+   MATRIX CODE RAIN ENGINE
+   (Pure CSS, fullscreen, behind layout)
+   ============================================================ */
+
+html,
+body,
+#app-mount {
+  background-color: var(--matrix-bg) !important;
+}
+
+/* avoid scrollbars from our fixed layers */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* keep app content above rain */
+#app-mount {
+  position: relative;
+  z-index: 1;
+}
+#app-mount > * {
+  position: relative;
+  z-index: 5;
+}
+
+/* some core containers transparent so rain is visible;
+   theme layer can override opacity as needed */
+.appMount-2yBXZl,
+.app-2CXKsg,
+.layers-OrUESM,
+.layer-86YKbF {
+  background: transparent !important;
+}
+
+/* Animations */
+@keyframes matrix-fall-slow {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(0%); }
+}
+@keyframes matrix-fall-mid {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(0%); }
+}
+@keyframes matrix-fall-fast {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(0%); }
+}
+
+/* Glow layer */
+#app-mount::before {
+  content: "";
+  position: fixed;
+  inset: -40px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(0, 255, 65, 0.22), transparent 55%),
+    radial-gradient(circle at 85% 0%, rgba(0, 255, 65, 0.12), transparent 55%),
+    radial-gradient(circle at 50% 100%, rgba(0, 255, 65, 0.06), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+/* Main dense rain */
+body::before {
+  content:
+    var(--matrix-chars)
+    var(--matrix-chars)
+    var(--matrix-chars);
+  position: fixed;
+  top: -250vh;
+  left: 0;
+  width: 100vw;
+  height: 500vh;
+  pointer-events: none;
+  z-index: 1;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: hidden;
+  font-family: var(--matrix-font);
+  font-size: 14px;
+  line-height: 14px;
+  letter-spacing: 1px;
+  color: var(--main-color);
+  text-shadow:
+    0 0 6px rgba(0, 255, 65, 0.9),
+    0 0 12px rgba(0, 255, 65, 0.7);
+  mix-blend-mode: screen;
+  opacity: var(--matrix-layer1-opacity);
+  animation: matrix-fall-slow var(--matrix-speed-slow) linear infinite;
+}
+
+/* Mid parallax rain */
+body::after {
+  content:
+    var(--matrix-chars)
+    var(--matrix-chars);
+  position: fixed;
+  top: -250vh;
+  left: 0;
+  width: 100vw;
+  height: 500vh;
+  pointer-events: none;
+  z-index: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: hidden;
+  font-family: var(--matrix-font);
+  font-size: 11px;
+  line-height: 11px;
+  letter-spacing: 1px;
+  color: var(--main-color);
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.7);
+  mix-blend-mode: screen;
+  opacity: var(--matrix-layer2-opacity);
+  animation: matrix-fall-mid var(--matrix-speed-mid) linear infinite;
+}
+
+/* Faint depth layer */
+html::after {
+  content:
+    var(--matrix-chars)
+    var(--matrix-chars);
+  position: fixed;
+  top: -250vh;
+  left: 0;
+  width: 100vw;
+  height: 500vh;
+  pointer-events: none;
+  z-index: 1;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow: hidden;
+  font-family: var(--matrix-font);
+  font-size: 9px;
+  line-height: 9px;
+  letter-spacing: 1px;
+  color: var(--main-color);
+  mix-blend-mode: screen;
+  opacity: var(--matrix-layer3-opacity);
+  animation: matrix-fall-fast var(--matrix-speed-fast) linear infinite;
+}
